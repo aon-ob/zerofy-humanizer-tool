@@ -2,7 +2,7 @@
 
 A local web application built with FastAPI, Playwright, and local LLMs (via Ollama) to automatically rewrite text and pass ZeroGPT detection.
 
-![Zerofy Dashboard](assets/demo.png)
+![Zerofy Dashboard](assets/demo_v2.png)
 
 ## 📌 What It Does
 AI detectors often give false positives because they rely heavily on statistical word patterns and repetitive sentence structures. I built this tool to test how these detectors work and see how easily they can be bypassed through automated token ablation and contextual rephrasing.
