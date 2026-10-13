@@ -42,8 +42,8 @@ ollama pull gemma4:e4b
 
 ```bash
 # Clone repository
-git clone [https://github.com/YOUR_GITHUB_USERNAME/zerogpt-ai-humanizer.git](https://github.com/YOUR_GITHUB_USERNAME/zerogpt-ai-humanizer.git)
-cd zerogpt-ai-humanizer
+git clone https://github.com/aon-ob/zerofy-humanizer-tool.git
+cd zerofy-humanizer-tool
 
 # Set up virtual environment
 python -m venv .venv
