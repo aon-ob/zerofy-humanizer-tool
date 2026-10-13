@@ -324,7 +324,7 @@ async def async_ablation_process(document_text: str, concurrency: int, event_que
                 "msg": f"Text length: {len(document_text)} chars. Split into {total_chunks} chunk(s)."
             })
 
-        put_event("status", {"msg": f"Spinning up {concurrency}x parallel Playwright workers [STAGE 1: ABLATION]..."})
+        put_event("status", {"msg": f"Spinning up {concurrency}x parallel Playwright workers [STAGE 1: PRUNING]..."})
 
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True)
