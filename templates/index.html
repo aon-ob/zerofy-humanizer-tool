@@ -3,186 +3,365 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zerofy — AI Score Reduction & Diff Engine</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <title>Zerofy v2.0 — AI Score Reduction & Humanizer Engine</title>
+    <script src="//cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="//fonts.googleapis.com">
+    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
+    <link href="//fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Hanken Grotesk"', 'system-ui', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
-                    },
-                    colors: {
-                        obsidian: {
-                            base: '#090A0D',
-                            card: '#0E1116',
-                            surface: '#141820',
-                            border: '#1F242E',
-                            subtle: '#29303D',
+        if (window.tailwind) {
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            sans: ['"Hanken Grotesk"', 'system-ui', 'sans-serif'],
+                            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],
+                        },
+                        colors: {
+                            obsidian: {
+                                base: '#090A0D',
+                                card: '#0E1116',
+                                surface: '#141820',
+                                border: '#1F242E',
+                                subtle: '#29303D',
+                            }
                         }
                     }
                 }
-            }
+            };
         }
     </script>
     <style>
-        ::selection { background: rgba(255, 255, 255, 0.18); color: #fff; }
+        /* Native Self-Contained CSS Fallback & Theme Variables */
+        :root {
+            --obs-base: #090A0D;
+            --obs-card: #0E1116;
+            --obs-surface: #141820;
+            --obs-border: #1F242E;
+            --obs-subtle: #29303D;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background-color: var(--obs-base);
+            color: #f4f4f5;
+            font-family: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::selection { background: rgba(99, 102, 241, 0.28); color: #fff; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #090A0D; }
         ::-webkit-scrollbar-thumb { background: #1F242E; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #2E3646; }
+
+        /* Core Utility Fallbacks in case Tailwind CDN is blocked */
+        .hidden { display: none !important; }
+        .block { display: block; }
+        .flex { display: flex; }
+        .inline-flex { display: inline-flex; }
+        .grid { display: grid; }
+        .flex-col { flex-direction: column; }
+        .flex-wrap { flex-wrap: wrap; }
+        .flex-1 { flex: 1 1 0%; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .items-baseline { align-items: baseline; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .gap-1\.5 { gap: 0.375rem; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-2\.5 { gap: 0.625rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-5 { gap: 1.25rem; }
+        .gap-6 { gap: 1.5rem; }
+
+        .bg-obsidian-base { background-color: var(--obs-base); }
+        .bg-obsidian-card { background-color: var(--obs-card); }
+        .bg-obsidian-surface { background-color: var(--obs-surface); }
+        .border { border-width: 1px; border-style: solid; border-color: var(--obs-border); }
+        .border-b { border-bottom: 1px solid var(--obs-border); }
+        .border-t { border-top: 1px solid var(--obs-border); }
+        .border-l { border-left: 1px solid var(--obs-border); }
+        .border-dashed { border-style: dashed; }
+        .border-obsidian-border { border-color: var(--obs-border); }
+
+        .rounded { border-radius: 0.25rem; }
+        .rounded-md { border-radius: 0.375rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-full { border-radius: 9999px; }
+
+        .p-1 { padding: 0.25rem; }
+        .p-2 { padding: 0.5rem; }
+        .p-2\.5 { padding: 0.625rem; }
+        .p-3\.5 { padding: 0.875rem; }
+        .p-4 { padding: 1rem; }
+        .p-5 { padding: 1.25rem; }
+        .p-12 { padding: 3rem; }
+        .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+        .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .px-3\.5 { padding-left: 0.875rem; padding-right: 0.875rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+        .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+
+        .w-full { width: 100%; }
+        .h-44 { height: 11rem; }
+        .max-h-\[380px\] { max-height: 380px; }
+        .max-h-\[360px\] { max-height: 360px; }
+        .max-h-28 { max-height: 7rem; }
+        .min-h-\[420px\] { min-height: 420px; }
+        .overflow-y-auto { overflow-y: auto; }
+        .overflow-hidden { overflow: hidden; }
+
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .font-mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .font-medium { font-weight: 500; }
+        .uppercase { text-transform: uppercase; }
+        .text-center { text-align: center; }
+        .cursor-pointer { cursor: pointer; }
+        .whitespace-pre-wrap { white-space: pre-wrap; }
+
+        .text-zinc-100 { color: #f4f4f5; }
+        .text-zinc-200 { color: #e4e4e7; }
+        .text-zinc-300 { color: #d4d4d8; }
+        .text-zinc-400 { color: #a1a1aa; }
+        .text-zinc-500 { color: #71717a; }
+        .text-emerald-300 { color: #6ee7b7; }
+        .text-emerald-400 { color: #34d399; }
+        .text-rose-300 { color: #fda4af; }
+        .text-rose-400 { color: #fb7185; }
+        .text-amber-300 { color: #fcd34d; }
+        .text-amber-400 { color: #fbbf24; }
+        .text-indigo-200 { color: #c7d2fe; }
+        .text-indigo-300 { color: #a5b4fc; }
+        .text-indigo-400 { color: #818cf8; }
+
+        .bg-indigo-600 { background-color: #4f46e5; color: #fff; }
+        .bg-emerald-600 { background-color: #059669; color: #fff; }
+        .bg-zinc-100 { background-color: #f4f4f5; color: #000; }
+        .bg-zinc-900 { background-color: #18181b; }
+
+        textarea, input, select, button {
+            font-family: inherit;
+            color: inherit;
+            background-color: var(--obs-surface);
+            border: 1px solid var(--obs-border);
+            border-radius: 0.5rem;
+        }
+        textarea { background-color: var(--obs-base); width: 100%; padding: 1rem; }
+
+        /* Responsive Workspace Grid Fallback */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+        @media (min-width: 640px) {
+            .metrics-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) {
+            .workspace-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+            .col-left { grid-column: span 5 / span 5; }
+            .col-right { grid-column: span 7 / span 7; }
+        }
+
+        .diff-mark.active-mark { outline: 2px solid #818cf8; outline-offset: 2px; }
     </style>
 </head>
 <body class="bg-obsidian-base text-zinc-100 min-h-screen flex flex-col font-sans selection:bg-zinc-800 antialiased">
 
+    <!-- Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
     <!-- Top Navigation Chrome -->
-    <header class="border-b border-obsidian-border bg-obsidian-card/90 backdrop-blur-md px-6 py-3.5 flex items-center justify-between sticky top-0 z-50">
+    <header class="border-b border-obsidian-border bg-obsidian-card px-6 py-3.5 flex items-center justify-between sticky top-0 z-40">
         <div class="flex items-center gap-6">
             <div class="flex items-center gap-2.5">
-                <div class="w-7 h-7 rounded-md bg-zinc-100 text-black flex items-center justify-center font-bold text-xs tracking-tighter shadow-sm">
+                <div class="w-7 h-7 rounded-md bg-zinc-100 text-black flex items-center justify-center font-bold text-xs tracking-tighter shadow-sm" style="width:28px;height:28px;">
                     <i class="fa-solid fa-bolt-lightning text-xs"></i>
                 </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-sm font-semibold tracking-tight text-zinc-100">ZEROFY</span>
-                        <span class="text-[10px] font-mono tracking-widest text-zinc-500 bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 rounded">v1.0.0</span>
-                    </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-semibold tracking-tight text-zinc-100">ZEROFY</span>
+                    <span class="text-[10px] font-mono tracking-widest text-indigo-300 bg-obsidian-surface border border-obsidian-border px-2 py-0.5 rounded">v2.0.0</span>
                 </div>
             </div>
             
-            <div class="hidden md:flex items-center gap-1 border-l border-obsidian-border pl-5 text-xs text-zinc-400">
-                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse mr-1"></span>
-                <span class="font-mono text-[11px] text-zinc-300">Backend Running</span>
-                <span class="text-zinc-600 px-1">/</span>
-                <span id="ollamaStatusBadge" class="text-zinc-400">Ollama API: Checking...</span>
+            <div class="hidden md:flex items-center gap-2 border-l border-obsidian-border pl-5 text-xs text-zinc-400">
+                <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" style="width:6px;height:6px;background:#10b981;"></span>
+                <span class="font-mono text-[11px] text-zinc-300">Persistent Cluster Pool</span>
+                <span class="text-zinc-600">/</span>
+                <span id="ollamaStatusBadge" class="text-zinc-400 font-mono text-[11px]">Ollama: Checking...</span>
             </div>
         </div>
 
-        <!-- Right System Indicators -->
-        <div class="flex items-center gap-3">
-
+        <!-- Right Quick Actions -->
+        <div class="flex items-center gap-2.5">
+            <button type="button" onclick="runQuickScanInput()"
+                class="h-8 px-3 py-1.5 rounded-lg bg-obsidian-surface hover:bg-obsidian-subtle border border-obsidian-border text-xs text-zinc-300 hover:text-white transition-all flex items-center gap-1.5 font-medium cursor-pointer"
+                title="Check ZeroGPT score of the input passage without modifying it">
+                <i class="fa-solid fa-magnifying-glass-chart text-[11px] text-indigo-400"></i>
+                <span>Quick Score Check</span>
+            </button>
         </div>
     </header>
 
     <!-- Main Workspace -->
-    <main class="flex-1 max-w-[1600px] w-full mx-auto p-5 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
+    <main class="flex-1 workspace-grid">
 
         <!-- Left Column: Source Input, Configuration, Realtime Log -->
-        <div class="lg:col-span-5 flex flex-col gap-5">
+        <div class="col-left lg:col-span-5 flex flex-col gap-5">
             
             <!-- Source Input Card -->
             <div class="bg-obsidian-card border border-obsidian-border rounded-xl p-5 flex flex-col gap-4 shadow-2xl relative overflow-hidden">
-                <div class="flex items-center justify-between border-b border-obsidian-border/80 pb-3 flex-wrap gap-2">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
-                            <i class="fa-regular fa-file-lines text-zinc-400"></i> Input Passage
-                        </span>
-                    </div>
+                <div class="flex items-center justify-between border-b border-obsidian-border pb-3 flex-wrap gap-2">
+                    <span class="text-xs font-semibold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+                        <i class="fa-regular fa-file-lines text-zinc-400"></i> Input Passage
+                    </span>
 
                     <div class="flex items-center gap-2">
-                        <input type="file" id="fileInput" accept=".txt,.docx,.pdf" class="hidden" onchange="handleFileUpload(event)">
+                        <input type="file" id="fileInput" accept=".txt,.md,.docx,.pdf" class="hidden" style="display:none;" onchange="handleFileUpload(event)">
                         <button type="button" onclick="document.getElementById('fileInput').click()" 
                             class="text-xs bg-obsidian-surface hover:bg-obsidian-subtle text-zinc-300 hover:text-white border border-obsidian-border px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer font-medium">
-                            <i class="fa-solid fa-arrow-up-from-bracket text-[10px] text-zinc-400"></i> Import
+                            <i class="fa-solid fa-arrow-up-from-bracket text-[10px] text-zinc-400"></i> Import (.txt/.docx/.pdf)
                         </button>
 
                         <!-- Workers Dropdown -->
-                        <div class="flex items-center gap-1.5 bg-obsidian-surface border border-obsidian-border px-2.5 py-1 rounded-lg text-xs font-mono text-zinc-300">
+                        <div class="flex items-center gap-1.5 bg-obsidian-surface border border-obsidian-border px-2.5 py-1 rounded-lg text-xs font-mono text-zinc-300" title="4-6 workers is optimal for ZeroGPT">
                             <i class="fa-solid fa-microchip text-[11px] text-zinc-500"></i>
-                            <select id="concurrencySelect" class="bg-transparent text-zinc-200 focus:outline-none cursor-pointer text-xs font-mono pr-1">
-                                <option value="1" class="bg-zinc-950 text-zinc-200">1 Worker (1x)</option>
-                                <option value="2" class="bg-zinc-950 text-zinc-200">2 Workers (2x)</option>
-                                <option value="4" selected class="bg-zinc-950 text-zinc-200">4 Workers (4x)</option>
-                                <option value="8" class="bg-zinc-950 text-zinc-200">8 Workers (8x)</option>
-                                <option value="12" class="bg-zinc-950 text-zinc-200">12 Workers (12x)</option>
-                                <option value="16" class="bg-zinc-950 text-zinc-200">16 Workers (16x)</option>
+                            <select id="concurrencySelect" class="bg-transparent text-zinc-200 focus:outline-none cursor-pointer text-xs font-mono pr-1" style="border:none;">
+                                <option value="2" class="bg-zinc-900 text-zinc-200">2 Workers (2x)</option>
+                                <option value="4" class="bg-zinc-900 text-zinc-200">4 Workers (4x)</option>
+                                <option value="6" selected class="bg-zinc-900 text-zinc-200">6 Workers (6x Fast)</option>
+                                <option value="8" class="bg-zinc-900 text-zinc-200">8 Workers (8x)</option>
+                                <option value="12" class="bg-zinc-900 text-zinc-200">12 Workers (12x)</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pipeline Mode Toolbar -->
-                <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-obsidian-base border border-obsidian-border p-2.5 rounded-lg">
-                    <div class="flex items-center gap-2">
-                        <span id="stage1Badge" class="px-2 py-0.5 rounded text-[10px] font-mono font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                            Stage 1: Pruning Mode
+                <!-- Pipeline Mode & Ollama Config Toolbar -->
+                <div class="flex flex-wrap items-center justify-between gap-2.5 bg-obsidian-base border border-obsidian-border p-2.5 rounded-lg">
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <span id="stage1Badge" class="px-2 py-0.5 rounded text-xs font-mono font-semibold text-indigo-300 bg-obsidian-surface border border-obsidian-border">
+                            Stage 1: Smart Pruning
                         </span>
-                        <span id="stage2Badge" class="px-2 py-0.5 rounded text-[10px] font-mono text-zinc-500 bg-obsidian-surface border border-obsidian-border opacity-50">
-                            Stage 2: Ollama (Locked)
+                        <span id="stage2Badge" class="px-2 py-0.5 rounded text-xs font-mono text-zinc-500 bg-obsidian-surface border border-obsidian-border">
+                            Stage 2: Zero-Baseline LLM
                         </span>
                     </div>
 
-                    <!-- Ollama Model Dropdown Container -->
-                    <div class="flex items-center gap-2 bg-obsidian-surface border border-obsidian-border px-2.5 py-1 rounded-md text-xs font-mono text-zinc-300">
-                        <i class="fa-solid fa-robot text-indigo-400 text-[11px]"></i>
-                        <select id="ollamaModelSelect" class="bg-transparent text-zinc-200 focus:outline-none cursor-pointer text-xs font-mono max-w-[140px] truncate">
-                            <option value="gemma4:e4b" selected class="bg-zinc-950 text-zinc-200">gemma4:e4b</option>
+                    <div class="flex items-center gap-2">
+                        <!-- Fallback Policy Selector -->
+                        <select id="fallbackPolicySelect" title="Behavior when all 12 Ollama rewrites still trigger AI detection"
+                            class="bg-obsidian-surface border border-obsidian-border rounded-md px-2 py-1 text-xs font-mono text-zinc-300 focus:outline-none cursor-pointer">
+                            <option value="keep_zero" selected class="bg-zinc-900">Fallback: Keep 0% Pruned</option>
+                            <option value="restore_manual" class="bg-zinc-900">Fallback: Restore Original</option>
                         </select>
+
+                        <!-- Ollama Model Dropdown -->
+                        <div class="flex items-center gap-1.5 bg-obsidian-surface border border-obsidian-border px-2.5 py-1 rounded-md text-xs font-mono text-zinc-300">
+                            <i class="fa-solid fa-robot text-indigo-400 text-[11px]"></i>
+                            <select id="ollamaModelSelect" class="bg-transparent text-zinc-200 focus:outline-none cursor-pointer text-xs font-mono max-w-[130px] truncate" style="border:none;">
+                                <option value="gemma4:e4b" selected class="bg-zinc-900 text-zinc-200">gemma4:e4b</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Textarea -->
                 <div class="relative">
-                    <textarea id="inputText" rows="13" 
-                        placeholder="Paste draft or drop content here for token-level linguistic deflation..."
-                        class="w-full bg-obsidian-base border border-obsidian-border rounded-lg p-4 text-zinc-200 text-sm focus:outline-none focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 transition-all resize-y placeholder:text-zinc-600 font-sans leading-relaxed"></textarea>
+                    <textarea id="inputText" rows="12" 
+                        placeholder="Paste draft or drop content here for token-level pruning and contextual Ollama humanization..."
+                        class="w-full bg-obsidian-base border border-obsidian-border rounded-lg p-4 text-zinc-200 text-sm focus:outline-none focus:border-zinc-500 transition-all resize-y placeholder:text-zinc-600 font-sans leading-relaxed"></textarea>
                     
-                    <div class="flex items-center justify-between text-[11px] font-mono text-zinc-500 pt-2 px-1">
-                        <span>Encoding: UTF-8</span>
+                    <div class="flex items-center justify-between text-xs font-mono text-zinc-500 pt-2 px-1">
+                        <span>Encoding: UTF-8 · Smart Cache Active</span>
                         <span id="charCount" class="text-zinc-400 font-medium">0 characters · 0 words</span>
                     </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-2 pt-1">
-                    <button id="startBtn" type="button" onclick="runAblationPass()" 
-                        class="flex-1 bg-zinc-100 hover:bg-white active:bg-zinc-300 text-black font-semibold py-2.5 px-4 rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 text-sm cursor-pointer group">
-                        <i class="fa-solid fa-play text-xs text-black group-hover:scale-110 transition-transform"></i> 
-                        <span id="startBtnLabel">Run Stage 1: AI Pruning</span>
+                <div class="flex flex-wrap gap-2 pt-1">
+                    <button id="autoPipelineBtn" type="button" onclick="runFullAutoPipeline()" 
+                        class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 px-4 rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 text-sm cursor-pointer">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xs"></i> 
+                        <span>Auto Humanize (Stage 1 + 2)</span>
                     </button>
-                    <button type="button" title="Clear text" onclick="resetWorkspace()" class="px-3 bg-obsidian-surface hover:bg-obsidian-subtle border border-obsidian-border rounded-lg text-zinc-400 hover:text-white transition-all text-xs cursor-pointer">
+
+                    <button id="startBtn" type="button" onclick="runAblationPass(false)" 
+                        class="bg-zinc-100 hover:bg-white text-black font-semibold py-2.5 px-3.5 rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 text-sm cursor-pointer">
+                        <i class="fa-solid fa-scissors text-xs"></i> 
+                        <span id="startBtnLabel">Stage 1 Only</span>
+                    </button>
+
+                    <button id="cancelBtn" type="button" onclick="cancelActiveJob()"
+                        class="hidden bg-rose-950 hover:bg-rose-900 border border-rose-700 text-rose-300 font-semibold py-2.5 px-3.5 rounded-lg transition-all items-center justify-center gap-1.5 text-xs cursor-pointer">
+                        <i class="fa-solid fa-stop text-xs"></i>
+                        <span>Stop</span>
+                    </button>
+
+                    <button type="button" title="Clear workspace" onclick="resetWorkspace()" 
+                        class="px-3 py-2.5 bg-obsidian-surface hover:bg-obsidian-subtle border border-obsidian-border rounded-lg text-zinc-400 hover:text-white transition-all text-xs cursor-pointer">
                         <i class="fa-regular fa-trash-can"></i>
                     </button>
-                </div>
-
-                <!-- Terminal / Debug Output -->
-                <div id="debugBox" class="hidden text-xs text-zinc-300 bg-obsidian-base border border-obsidian-border p-2.5 rounded-lg font-mono flex items-center justify-between">
-                    <div class="flex items-center gap-2 truncate">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                        <span class="text-zinc-300 truncate">System initialized</span>
-                    </div>
                 </div>
             </div>
 
             <!-- Execution Pipeline & Telemetry Feed -->
             <div id="statusCard" class="bg-obsidian-card border border-obsidian-border rounded-xl p-5 flex flex-col gap-3 shadow-xl">
-                <div class="flex items-center justify-between border-b border-obsidian-border/80 pb-3">
+                <div class="flex items-center justify-between border-b border-obsidian-border pb-3">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-terminal text-zinc-400 text-xs" id="spinner"></i>
-                        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Output</span>
+                        <span class="text-xs font-semibold uppercase tracking-wider text-zinc-300">Telemetry Stream</span>
                     </div>
                     <div class="flex items-center gap-2 font-mono text-xs">
-                        <span class="px-2 py-0.5 rounded bg-obsidian-surface border border-obsidian-border text-zinc-400 text-[11px] flex items-center gap-1.5">
+                        <span class="px-2 py-0.5 rounded bg-obsidian-surface border border-obsidian-border text-zinc-400 flex items-center gap-1.5">
                             <i class="fa-regular fa-clock text-[10px] text-zinc-500"></i>
                             <span>Elapsed: <span id="timerText">00:00</span></span>
                         </span>
-                        <span id="scoreBadge" class="px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-zinc-200 text-[11px] font-medium">
+                        <span id="scoreBadge" class="px-2 py-0.5 rounded bg-zinc-900 border border-obsidian-border text-zinc-200 font-medium">
                             Ready
                         </span>
                     </div>
                 </div>
 
+                <!-- Progress Bar -->
+                <div class="w-full bg-obsidian-base border border-obsidian-border rounded-full overflow-hidden" style="height:6px;">
+                    <div id="pipelineProgressBar" class="bg-indigo-600 h-full w-0 transition-all duration-300" style="height:100%;width:0%;"></div>
+                </div>
+
                 <!-- Logs Feed -->
                 <div id="logsFeed" class="bg-obsidian-base border border-obsidian-border rounded-lg p-3.5 h-44 overflow-y-auto text-xs font-mono flex flex-col gap-1.5 text-zinc-400 leading-relaxed">
                     <div class="flex items-start gap-2 text-zinc-500">
-                        <span class="opacity-40">></span>
-                        <span>Waiting for Stage 1 input...</span>
+                        <span class="opacity-40">&gt;</span>
+                        <span>Ready. Choose "Auto Humanize (Stage 1 + 2)" or "Stage 1 Only".</span>
                     </div>
                 </div>
             </div>
@@ -190,48 +369,48 @@
         </div>
 
         <!-- Right Column: Results & Interactive Diff View -->
-        <div class="lg:col-span-7 flex flex-col gap-5">
+        <div class="col-right lg:col-span-7 flex flex-col gap-5">
 
             <!-- Empty State Placeholder -->
-            <div id="emptyState" class="bg-obsidian-card border border-dashed border-obsidian-border rounded-xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[400px]">
+            <div id="emptyState" class="bg-obsidian-card border border-dashed border-obsidian-border rounded-xl p-12 text-center flex flex-col items-center justify-center h-full min-h-[420px]">
                 <div class="bg-obsidian-surface p-4 rounded-full text-zinc-500 mb-4 border border-obsidian-border">
-                    <i class="fa-solid fa-wand-magic-sparkles text-3xl text-zinc-400"></i>
+                    <i class="fa-solid fa-wand-magic-sparkles text-3xl text-indigo-400"></i>
                 </div>
-                <h3 class="text-zinc-200 font-semibold mb-1">No Jobs Running</h3>
-                <p class="text-zinc-500 text-sm max-w-sm">Paste your text on the left and click "Run Stage 1: AI Pruning" to start.</p>
+                <h3 class="text-zinc-200 font-semibold mb-1">No Active Humanization Job</h3>
+                <p class="text-zinc-500 text-sm" style="max-width:420px;">Paste your text on the left and run <strong class="text-zinc-300">Auto Humanize (Stage 1 + 2)</strong> for automatic 0%-AI pruning and contextual Ollama sentence rewriting.</p>
             </div>
 
             <!-- Results Panel -->
-            <div id="resultsPanel" class="hidden flex-col gap-5">
+            <div id="resultsPanel" class="hidden flex-col gap-4">
 
                 <!-- Stage 2 Ollama Trigger Banner -->
-                <div id="synonymTriggerBanner" class="bg-indigo-950/60 border border-indigo-700/60 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+                <div id="synonymTriggerBanner" class="bg-obsidian-surface border border-obsidian-border rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
                     <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-lg bg-indigo-600 text-white">
-                            <i class="fa-solid fa-brain text-lg"></i>
+                        <div class="p-2.5 rounded-lg bg-indigo-600 text-white">
+                            <i class="fa-solid fa-brain text-base"></i>
                         </div>
                         <div>
-                            <h4 class="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Stage 2 Ready: Contextual Ollama Rewrites</h4>
-                            <p class="text-xs text-indigo-300/80">Stage 1 identified <span id="flaggedCountSpan" class="font-bold text-white">0</span> AI phrase(s). Replace them with contextual human rewrites?</p>
+                            <h4 class="text-xs font-semibold text-indigo-200 uppercase tracking-wider" style="margin:0 0 4px 0;">Stage 2 Ready: Zero-Baseline Ollama Humanizer</h4>
+                            <p class="text-xs text-indigo-300" style="margin:0;">Stage 1 pruned <span id="flaggedCountSpan" class="font-bold text-white">0</span> AI trigger token(s) across <span id="flaggedSentCountSpan" class="font-bold text-white">0</span> sentence(s). Repair &amp; rewrite them with Ollama while keeping 0% AI?</p>
                         </div>
                     </div>
                     <button id="runSynonymBtn" type="button" onclick="runSynonymPass()"
-                        class="w-full sm:w-auto px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md whitespace-nowrap">
+                        class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
-                        <span>Replace AI Phrases with Ollama Rewrites</span>
+                        <span>Run Stage 2: Ollama Rewrites</span>
                     </button>
                 </div>
 
                 <!-- Metrics Matrix (Score Summary) -->
-                <div class="grid grid-cols-3 gap-3">
+                <div class="metrics-grid">
                     <div class="bg-obsidian-card border border-obsidian-border rounded-xl p-4 flex flex-col justify-between">
                         <div class="flex items-center justify-between text-zinc-400 text-xs mb-1">
                             <span class="font-medium">Initial Score</span>
-                            <i class="fa-solid fa-arrow-trend-up text-zinc-500 text-[10px]"></i>
+                            <i class="fa-solid fa-arrow-trend-up text-rose-400 text-[10px]"></i>
                         </div>
                         <div class="flex items-baseline gap-2">
-                            <span id="resInitialScore" class="text-3xl font-bold tracking-tight text-red-400 font-mono">0.0%</span>
-                            <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">AI Detected</span>
+                            <span id="resInitialScore" class="text-2xl sm:text-3xl font-bold tracking-tight text-rose-400 font-mono">0.0%</span>
+                            <span class="text-xs font-mono text-zinc-500 uppercase">AI</span>
                         </div>
                     </div>
 
@@ -241,19 +420,30 @@
                             <i class="fa-solid fa-check text-emerald-400 text-[10px]"></i>
                         </div>
                         <div class="flex items-baseline gap-2">
-                            <span id="resFinalScore" class="text-3xl font-bold tracking-tight text-emerald-400 font-mono">0.0%</span>
-                            <span class="text-[10px] font-mono text-emerald-400 uppercase tracking-wider font-semibold">Human Equiv</span>
+                            <span id="resFinalScore" class="text-2xl sm:text-3xl font-bold tracking-tight text-emerald-400 font-mono">0.0%</span>
+                            <span id="resFinalLabel" class="text-xs font-mono text-emerald-400 uppercase font-semibold">Clean</span>
                         </div>
                     </div>
 
                     <div class="bg-obsidian-card border border-obsidian-border rounded-xl p-4 flex flex-col justify-between">
                         <div class="flex items-center justify-between text-zinc-400 text-xs mb-1">
-                            <span class="font-medium">Tokens Flagged</span>
-                            <i class="fa-solid fa-layer-group text-zinc-500 text-[10px]"></i>
+                            <span class="font-medium">Edits Applied</span>
+                            <i class="fa-solid fa-layer-group text-indigo-400 text-[10px]"></i>
                         </div>
                         <div class="flex items-baseline gap-2">
-                            <span id="resWordCount" class="text-3xl font-bold tracking-tight text-zinc-200 font-mono">0</span>
-                            <span class="text-[10px] font-mono text-zinc-400 uppercase tracking-wider">Phrases Modified</span>
+                            <span id="resWordCount" class="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-100 font-mono">0</span>
+                            <span class="text-xs font-mono text-zinc-400 uppercase">Segments</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-obsidian-card border border-obsidian-border rounded-xl p-4 flex flex-col justify-between">
+                        <div class="flex items-center justify-between text-zinc-400 text-xs mb-1">
+                            <span class="font-medium">Manual Review</span>
+                            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-[10px]"></i>
+                        </div>
+                        <div class="flex items-baseline gap-2">
+                            <span id="resManualCount" class="text-2xl sm:text-3xl font-bold tracking-tight text-amber-400 font-mono">0</span>
+                            <span class="text-xs font-mono text-zinc-400 uppercase">Flagged</span>
                         </div>
                     </div>
                 </div>
@@ -261,54 +451,134 @@
                 <!-- Tabbed Review Workstation -->
                 <div class="bg-obsidian-card border border-obsidian-border rounded-xl p-5 flex flex-col gap-4 shadow-xl flex-1">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-obsidian-border pb-3.5">
-                        <div class="flex items-center bg-obsidian-base border border-obsidian-border p-1 rounded-lg">
+                        <div class="flex items-center bg-obsidian-base border border-obsidian-border p-1 rounded-lg gap-1">
                             <button id="tabReviewBtn" onclick="switchTab('review')" 
-                                class="px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-100 text-black shadow-sm transition-all flex items-center gap-2">
+                                class="px-3 py-1.5 rounded-md text-xs font-medium bg-zinc-100 text-black shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
                                 <i class="fa-solid fa-code-compare text-[11px]"></i>
                                 <span>Interactive Diff</span>
                             </button>
                             <button id="tabCleanBtn" onclick="switchTab('clean')" 
-                                class="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition-all flex items-center gap-2">
-                                <i class="fa-solid fa-shield-halved text-[11px]"></i>
-                                <span>Clean Copy (0% AI)</span>
+                                class="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                                <span>Editable Clean Copy</span>
+                            </button>
+                            <button id="tabSplitBtn" onclick="switchTab('split')" 
+                                class="px-3 py-1.5 rounded-md text-xs font-medium text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-columns text-[11px]"></i>
+                                <span>Side-by-Side</span>
                             </button>
                         </div>
 
-                        <div class="flex items-center gap-2">
-                            <button onclick="copyCleanText()" class="text-xs bg-obsidian-surface hover:bg-obsidian-subtle text-zinc-200 hover:text-white border border-obsidian-border px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 font-medium cursor-pointer">
+                        <!-- Export & Re-Verify Toolbar -->
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <button type="button" onclick="verifyCleanTextScore()" id="verifyCleanBtn"
+                                class="text-xs bg-obsidian-surface hover:bg-obsidian-subtle text-indigo-300 border border-obsidian-border px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 font-medium cursor-pointer"
+                                title="Re-verify the Clean Copy in ZeroGPT">
+                                <i class="fa-solid fa-rotate text-[11px]"></i>
+                                <span>Verify 0% Score</span>
+                            </button>
+
+                            <button type="button" onclick="copyCleanText()" id="copyCleanBtn"
+                                class="text-xs bg-obsidian-surface hover:bg-obsidian-subtle text-zinc-200 hover:text-white border border-obsidian-border px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 font-medium cursor-pointer">
                                 <i class="fa-regular fa-copy text-[11px] text-zinc-400"></i>
-                                <span>Copy Clean Text</span>
+                                <span>Copy</span>
+                            </button>
+
+                            <button type="button" onclick="exportCleanFile('txt')"
+                                class="text-xs bg-obsidian-surface hover:bg-obsidian-subtle text-zinc-300 hover:text-white border border-obsidian-border px-2.5 py-1.5 rounded-lg transition-all font-mono cursor-pointer"
+                                title="Download as .txt">
+                                .TXT
+                            </button>
+
+                            <button type="button" onclick="exportCleanFile('docx')"
+                                class="text-xs bg-obsidian-surface hover:bg-obsidian-subtle text-zinc-300 hover:text-white border border-obsidian-border px-2.5 py-1.5 rounded-lg transition-all font-mono cursor-pointer"
+                                title="Download as .docx">
+                                .DOCX
                             </button>
                         </div>
                     </div>
 
-                    <!-- Interactive Diff Tab View -->
-                    <div id="tabReview" class="block">
-                        <div class="flex items-center justify-between text-xs text-zinc-400 mb-2">
-                            <span class="flex items-center gap-1.5">
-                                <i class="fa-solid fa-circle-info text-zinc-500 text-[11px]"></i>
-                                <span>Original source with modified/replaced phrases highlighted:</span>
+                    <!-- Interactive Inspector Drawer -->
+                    <div id="diffInspectorCard" class="hidden bg-obsidian-surface border border-obsidian-border rounded-lg p-3.5 flex-col gap-2.5 shadow-lg">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-indigo-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-sliders text-[11px]"></i>
+                                <span>Interactive Segment Inspector</span>
                             </span>
+                            <button type="button" onclick="closeDiffInspector()" class="text-zinc-400 hover:text-white text-xs cursor-pointer px-2 py-0.5">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
                         </div>
-                        <div id="highlightedContainer" class="bg-obsidian-base border border-obsidian-border rounded-lg p-5 text-zinc-200 text-sm leading-relaxed overflow-y-auto max-h-[360px] font-sans">
+                        <div class="text-xs text-zinc-400 font-mono bg-obsidian-base p-2 rounded border border-obsidian-border">
+                            <span class="text-zinc-500">Original:</span> <span id="inspOriginalText" class="text-zinc-200"></span>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <input id="inspCustomInput" type="text" placeholder="Type custom replacement or leave blank to prune..."
+                                class="flex-1 bg-obsidian-base border border-obsidian-border rounded px-3 py-1.5 text-xs text-zinc-100 focus:outline-none">
+                            <button type="button" onclick="applyInspectorEdit('custom')"
+                                class="px-3 py-1.5 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium cursor-pointer">
+                                Apply Edit
+                            </button>
+                            <button type="button" id="inspRerollBtn" onclick="rerollInspectorSentence()"
+                                class="px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium cursor-pointer flex items-center gap-1.5">
+                                <i class="fa-solid fa-dice"></i>
+                                <span>Re-Roll with Ollama</span>
+                            </button>
+                            <button type="button" onclick="applyInspectorEdit('original')"
+                                class="px-2.5 py-1.5 rounded bg-obsidian-base hover:bg-zinc-900 border border-obsidian-border text-zinc-300 text-xs cursor-pointer">
+                                Restore Original
+                            </button>
+                        </div>
+                        <div id="inspCandidatesRow" class="hidden flex-wrap gap-1.5 pt-1"></div>
+                    </div>
+
+                    <!-- Tab 1: Interactive Diff View -->
+                    <div id="tabReview" class="block">
+                        <div class="flex flex-wrap items-center justify-between text-xs text-zinc-400 mb-2.5 gap-2">
+                            <span class="flex items-center gap-1.5">
+                                <i class="fa-solid fa-hand-pointer text-indigo-400 text-[11px]"></i>
+                                <span>Click any highlighted phrase below to inspect, edit, or re-roll with Ollama:</span>
+                            </span>
+                            <div class="flex items-center gap-3 text-xs font-mono">
+                                <span class="flex items-center gap-1.5"><span style="width:8px;height:8px;border-radius:50%;background:#34d399;display:inline-block;"></span> Replaced (0% AI)</span>
+                                <span class="flex items-center gap-1.5"><span style="width:8px;height:8px;border-radius:50%;background:#fb7185;display:inline-block;"></span> Pruned</span>
+                                <span class="flex items-center gap-1.5"><span style="width:8px;height:8px;border-radius:50%;background:#fbbf24;display:inline-block;"></span> Manual Review</span>
+                            </div>
+                        </div>
+                        <div id="highlightedContainer" class="bg-obsidian-base border border-obsidian-border rounded-lg p-5 text-zinc-200 text-sm leading-relaxed overflow-y-auto max-h-[380px] font-sans">
                         </div>
                     </div>
 
-                    <!-- Clean Output Tab View -->
-                    <div id="tabClean" class="hidden">
-                        <div id="cleanTextContainer" class="bg-obsidian-base border border-obsidian-border rounded-lg p-5 text-zinc-200 text-sm leading-relaxed overflow-y-auto max-h-[360px] font-sans whitespace-pre-wrap">
+                    <!-- Tab 2: Editable Clean Output View -->
+                    <div id="tabClean" class="hidden flex-col gap-2">
+                        <div class="flex items-center justify-between text-xs text-zinc-400">
+                            <span>You can freely edit the final humanized text below and click <strong>Verify 0% Score</strong> to re-test in ZeroGPT:</span>
+                        </div>
+                        <textarea id="cleanTextContainer" rows="14"
+                            oninput="cleanTextOutput = this.value"
+                            class="w-full bg-obsidian-base border border-obsidian-border rounded-lg p-5 text-zinc-100 text-sm leading-relaxed overflow-y-auto font-sans focus:outline-none resize-y"></textarea>
+                    </div>
+
+                    <!-- Tab 3: Side-by-Side Split View -->
+                    <div id="tabSplit" class="hidden grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="flex flex-col gap-1.5">
+                            <span class="text-xs font-mono uppercase text-zinc-400">Original Passage</span>
+                            <div id="splitOriginalContainer" class="bg-obsidian-base border border-obsidian-border rounded-lg p-4 text-zinc-400 text-xs leading-relaxed overflow-y-auto max-h-[360px] whitespace-pre-wrap font-sans"></div>
+                        </div>
+                        <div class="flex flex-col gap-1.5">
+                            <span class="text-xs font-mono uppercase text-emerald-400">Humanized Output (0% AI)</span>
+                            <div id="splitCleanContainer" class="bg-obsidian-base border border-obsidian-border rounded-lg p-4 text-zinc-100 text-xs leading-relaxed overflow-y-auto max-h-[360px] whitespace-pre-wrap font-sans"></div>
                         </div>
                     </div>
 
                     <!-- Removed/Replaced Tokens Matrix -->
-                    <div class="border-t border-obsidian-border pt-4 mt-2">
-                        <div class="flex items-center justify-between mb-2.5">
-                            <h4 class="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+                    <div class="border-t border-obsidian-border pt-3.5 mt-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-2" style="margin:0;">
                                 <i class="fa-solid fa-list-check text-zinc-400 text-[11px]"></i>
-                                <span>Extracted Phrase Substitutions</span>
+                                <span>Modified Segments (Click any chip to edit)</span>
                             </h4>
                         </div>
-
                         <div id="removedChips" class="flex flex-wrap gap-2 max-h-28 overflow-y-auto pt-0.5">
                         </div>
                     </div>
@@ -325,16 +595,15 @@
     <footer class="border-t border-obsidian-border bg-obsidian-base px-6 py-2.5 flex items-center justify-between text-xs text-zinc-500 font-mono">
         <div class="flex items-center gap-4">
             <span class="flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <span class="text-zinc-400">Engine: Online</span>
+                <span style="width:6px;height:6px;border-radius:50%;background:#10b981;display:inline-block;"></span>
+                <span class="text-zinc-400">Engine: Persistent Playwright Pool + LRU Cache</span>
             </span>
-            <span class="hidden md:inline">Playwright Engine</span>
         </div>
         <div class="flex items-center gap-3">
             <span class="text-zinc-400">Made with ❤️ by Aon</span>
         </div>
     </footer>
 
-    <script src="/static/main.js?v=1.0.0"></script>
+    <script src="/static/main.js?v=2.0.1"></script>
 </body>
 </html>
